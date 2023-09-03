@@ -6,7 +6,8 @@ import ListGroup from "./components/ListGroup";
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import Form from "./components/Form";
-import ExpenseList from "./expense-tracker/ExpenseList";
+import ExpenseList from "./expense-tracker/components/ExpenseList";
+import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
 function App() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [expenses, setExpenses] = useState([
@@ -15,9 +16,12 @@ function App() {
     { id: 3, description: "vvv", amount: 10, category: "Utilities" },
     { id: 4, description: "ccc", amount: 10, category: "Utilities" },
   ]);
+  const [selectCategory, setSelectCategory] = useState("");
   let items = ["Photcharadanai", "me", "love", "black cat"];
   const name = "Draf";
-
+  const visibleExpenses = selectCategory
+    ? expenses.filter((e) => e.category === selectCategory)
+    : expenses;
   const handleSelectedItem = (item: string) => console.log(item);
   return (
     <div className="App">
@@ -53,10 +57,15 @@ function App() {
       </div>
       <div>
         <h1>Expense</h1>
-        <ExpenseList
-          expenses={expenses}
-          onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
-        />
+        <div className="mb-3">
+          <ExpenseFilter
+            onSelectCategory={(category) => setSelectCategory(category)}
+          />
+          <ExpenseList
+            expenses={visibleExpenses}
+            onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+          />
+        </div>
       </div>
     </div>
   );
