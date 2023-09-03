@@ -33,7 +33,7 @@ const Form = () => {
           className="form-control"
         />
       </div>
-      <button disabled={isValid} className="btn btn-primary" type="submit">
+      <button  className="btn btn-primary" type="submit">
         Submit
       </button>
     </form>
