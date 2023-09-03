@@ -5,6 +5,7 @@ import Message from "./Message";
 import ListGroup from "./components/ListGroup";
 import Alert from "./components/Alert";
 import Button from "./components/Button";
+import Form from "./components/Form";
 function App() {
   const [alertVisible,setAlertVisible]= useState(false)
   let items = ["Photcharadanai", "me", "love", "black cat"];
@@ -24,6 +25,11 @@ function App() {
       </Alert>}
       <Button onClick={()=>{setAlertVisible(true)}}>My</Button>
       <Button colour="secondary" onClick={()=>{setAlertVisible(true)}}>D</Button>
+      
+      <div>
+        <h1>Form</h1>
+        <Form/>
+      </div>
     </div>
   );
 }
