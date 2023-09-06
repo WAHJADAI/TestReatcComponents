@@ -4,18 +4,26 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-interface ExpenseData{
-    description:string
-    amount:number
-    category:[]
+interface ExpenseData {
+  description: string;
+  amount: number;
+  category: [];
 }
 interface Props {
   onSubmit: (data: ExpenseFormData) => void;
 }
 const schema = z.object({
-  description: z.string().min(3).max(50),
-  amount: z.number().min(0.01).max(100_000),
-  category: z.enum(categories),
+  description: z
+    .string()
+    .min(3, { message: "The description must be 3 characters or more" })
+    .max(50, { message: "The description must be 50 characters or less" }),
+  amount: z
+    .number({ invalid_type_error: "Amount is required" })
+    .min(0.01, { message: "The number must be 0.01 or more" })
+    .max(100_000, { message: "The number must be 100,000 or less" }),
+  category: z.enum(categories, {
+    errorMap: () => ({ message: "Category is required" }),
+  }),
 });
 type ExpenseFormData = z.infer<typeof schema>;
 
@@ -28,42 +36,44 @@ const ExpenseForm = ({ onSubmit }: Props) => {
   } = useForm<ExpenseFormData>({ resolver: zodResolver(schema) });
   return (
     <form
-      
-      onSubmit={handleSubmit(data=>console.log(data))}
+      onSubmit={handleSubmit((data) => {
+        onSubmit(data), reset();
+      })}
     >
       <div className="mb-3">
         <label htmlFor="description" className="form-label">
           Description
         </label>
         <input
-          {...(register("description"),
-          { required: true, minLength: 3, maxLength: 50 })}
+          {...register("description")}
           id="description"
           type="text"
           className="form-control"
         />
+
+        {errors.description && (
+          <p className="text-danger">{errors.description?.message}</p>
+        )}
       </div>
       <div className="mb-3">
         <label htmlFor="amount" className="form-label">
           Amount
         </label>
         <input
-          {...(register("amount", { valueAsNumber: true }),
-          { required: true, max: 100_000 })}
+          {...register("amount", { valueAsNumber: true })}
           id="amount"
           type="number"
           className="form-control"
         />
+        {errors.amount && (
+          <p className="text-danger">{errors.amount?.message}</p>
+        )}
       </div>
       <div className="mb-3">
         <label htmlFor="category" className="form-label">
           Category
         </label>
-        <select
-          {...(register("category"), { required: true })}
-          id="category"
-          className="form-select"
-        >
+        <select {...register("category")} id="category" className="form-select">
           <option value=""></option>
           {categories.map((category) => (
             <option key={category} value={category}>
@@ -71,6 +81,9 @@ const ExpenseForm = ({ onSubmit }: Props) => {
             </option>
           ))}
         </select>
+        {errors.category && (
+          <p className="text-danger">{errors.category?.message}</p>
+        )}
       </div>
       <button className="btn btn-primary" type="submit">
         Submit
